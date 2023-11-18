@@ -4,20 +4,11 @@ defmodule RealDealApiWeb.AccountController do
   alias RealDealApiWeb.{Auth.Guardian, Auth.ErrorResponse}
   alias RealDealApi.{Accounts, Accounts.Account, Users, Users.User}
 
-  plug :is_authorized_account when action in [:update, :delete]
+  import RealDealApiWeb.Auth.AuthorizedPlug
+
+  plug :is_authorized when action in [:update, :delete]
 
   action_fallback RealDealApiWeb.FallbackController
-
-  defp is_authorized_account(conn, _opts) do
-    %{params: %{"account" => params}} = conn
-    account = Accounts.get_account!(params["id"])
-
-    if conn.assigns.account.id == account.id do
-      conn
-    else
-      raise ErrorResponse.Forbidden
-    end
-  end
 
   def index(conn, _params) do
     accounts = Accounts.list_accounts()
@@ -26,7 +17,7 @@ defmodule RealDealApiWeb.AccountController do
 
   def create(conn, %{"account" => account_params}) do
     with {:ok, %Account{} = account} <- Accounts.create_account(account_params),
-          {:ok, %User{} = _user} <- Users.create_user(account, account_params) do
+         {:ok, %User{} = _user} <- Users.create_user(account, account_params) do
       authorize_account(conn, account.email, account_params["hash_password"])
     end
   end
@@ -42,13 +33,16 @@ defmodule RealDealApiWeb.AccountController do
         |> Plug.Conn.put_session(:account_id, account.id)
         |> put_status(:ok)
         |> render("account_token.json", %{account: account, token: token})
-      {:error, :unauthorized} -> raise ErrorResponse.Unauthorized, message: "Email or Password incorrect."
+
+      {:error, :unauthorized} ->
+        raise ErrorResponse.Unauthorized, message: "Email or Password incorrect."
     end
   end
 
   def refresh_session(conn, %{}) do
     token = Guardian.Plug.current_token(conn)
     {:ok, account, new_token} = Guardian.authenticate(token)
+
     conn
     |> Plug.Conn.put_session(:account_id, account.id)
     |> put_status(:ok)
