@@ -68,7 +68,7 @@ defmodule RealDealApiWeb.AccountController do
   def current_account(conn, %{}) do
     conn
     |> put_status(:ok)
-    |> render("full_account.json", %{account: conn.assign.account})
+    |> render("full_account.json", %{account: conn.assigns.account})
   end
 
   def update(conn, %{"current_hash" => current_hash, "account" => account_params}) do

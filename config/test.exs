@@ -6,8 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :real_deal_api, RealDealApi.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "backend_real",
+  password: "blork_elixir",
   hostname: "localhost",
   database: "real_deal_api_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
