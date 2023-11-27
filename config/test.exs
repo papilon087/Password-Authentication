@@ -8,7 +8,7 @@ import Config
 config :real_deal_api, RealDealApi.Repo,
   username: "backend_real",
   password: "blork_elixir",
-  hostname: "localhost",
+  hostname: "db",
   database: "real_deal_api_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10

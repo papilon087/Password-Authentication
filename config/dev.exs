@@ -4,7 +4,7 @@ import Config
 config :real_deal_api, RealDealApi.Repo,
   username: "backend_real",
   password: "blork_elixir",
-  hostname: "localhost",
+  hostname: "db",
   database: "real_deal_api_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
