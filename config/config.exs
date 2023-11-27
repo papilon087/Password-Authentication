@@ -19,9 +19,13 @@ config :real_deal_api, RealDealApiWeb.Endpoint,
   live_view: [signing_salt: "L6LvowKe"]
 
 # Configures Elixir's Logger
+# config :logger, :console,
+#   format: "$time $metadata[$level] $message\n",
+#   metadata: [:request_id],
+#   level: :warning
+
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id],
+  format: "$time $metadata[:request_id][$level] $message\n",
   level: :warning
 
 config :real_deal_api, RealDealApiWeb.Auth.Guardian,
