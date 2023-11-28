@@ -1,30 +1,26 @@
-FROM elixir:alpine
+# Use a imagem base do Elixir e do Phoenix
+FROM elixir:latest
 
-# Set environment variables
-ENV MIX_ENV=prod \
-    APP_HOME=/app
+# Instale as dependências do sistema
+RUN apt-get update && \
+    apt-get install -y build-essential inotify-tools
 
-# Install build dependencies
-RUN apk --no-cache add build-base
+# Crie o diretório de trabalho no container
+WORKDIR /app
 
-# Install Hex and Rebar
+# Copie os arquivos necessários para o diretório de trabalho
+COPY . .
+
+# Instale as dependências do mix
 RUN mix local.hex --force && \
-    mix local.rebar --force
+    mix local.rebar --force && \
+    mix deps.get
 
-WORKDIR $APP_HOME
+# Compile o projeto
+RUN mix compile
 
-# Install and compile dependencies
-COPY mix.exs mix.lock ./
-COPY config config
-RUN mix deps.get --only prod
-RUN mix deps.compile
-
-# Copy the application code
-COPY lib lib
-COPY priv priv
-
-# App Port
+# Exponha a porta em que o Phoenix está rodando
 EXPOSE 4000
 
-# Default Command
+# Execute o comando para iniciar o servidor Phoenix
 CMD ["mix", "phx.server"]
